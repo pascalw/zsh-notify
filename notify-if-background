@@ -45,6 +45,7 @@ fi
 
 if [[ -n ${TMUX+1} ]]; then
   the_tty=`tmux display-message -p '#{client_tty}'`
+  [[ $(tmux list-windows -F '#{window_active} #{pane_id}' | grep -i '^1' | awk '{ print $2 }') == "$TMUX_PANE" ]] && tmux_pane_active="true" || tmux_pane_active="false"
 else
   the_tty=$TTY
 fi
@@ -61,7 +62,7 @@ OSA`
 
   tty_active=`tell-iterm2 <<< "tty of (current session of current tab of current window) is equal to \"$the_tty\""`
 
-  if [[ $iterm_frontmost == "true" && $tty_active == "true" ]]; then
+  if [[ $iterm_frontmost == "true" && $tty_active == "true" && $tmux_pane_active == "true" ]]; then
     return 2
   fi
 else
